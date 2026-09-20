@@ -20704,10 +20704,6 @@
 			"tick": 2705
 		},
 		{
-			"name": "console-inactive",
-			"tick": 3320
-		},
-		{
 			"name": "power-active",
 			"tick": 3373
 		},

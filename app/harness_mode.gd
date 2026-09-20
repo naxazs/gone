@@ -382,7 +382,7 @@ func capture_next_beat() -> void:
 		report.add_event({"kind": "power_door", "tick": pinned_tick,
 			"frame": pinned_frame, "openings": player.motion.power_door_openings,
 			"open": game.power_door_open})
-	elif beat.name == "console-inactive" or beat.name == "power-active":
+	elif beat.name == "power-active":
 		report.add_event({"kind": "console", "tick": pinned_tick,
 			"frame": pinned_frame, "presses": player.motion.console_presses,
 			"state": PowerRoom.console_state_name(game.console_state),

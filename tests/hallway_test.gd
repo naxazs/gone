@@ -141,16 +141,49 @@ func test_switch_plate_sits_beside_the_doorway() -> void:
 		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_DOME_RADIUS * 0.55 - 1e-4,
 		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_DOME_RADIUS * 0.55 + 1e-4,
 		"the dome stands proud of the plate into the hall")
+	var plate_material := plate.material_override as StandardMaterial3D
+	assert_true(plate_material != null, "the plate carries a standard material")
+	assert_true(plate_material.albedo_color == Hallway.SWITCH_PLATE_COLOR, "the plate reads the safety amber")
+	assert_true(plate_material.emission_enabled, "the plate glows faintly so the switch reads in the dark")
 	var dome_material := dome.material_override as StandardMaterial3D
 	assert_true(dome_material != null, "the dome carries a standard material")
-	assert_true(dome_material.albedo_color == Hallway.SWITCH_DOME_COLOR, "the dome reads the fuel-stop red")
-	assert_false(dome_material.emission_enabled, "the dome does not glow before the flip: the dark hides it")
+	assert_true(dome_material.albedo_color == Hallway.SWITCH_DOME_COLOR, "the dome reads the emergency red")
+	assert_true(dome_material.emission_enabled, "the dome glows faintly behind the glass")
 	assert_float_in_range(Hallway.switch_act_center().x, Hallway.SWITCH_PLATE_CENTER.x - 1e-4, Hallway.SWITCH_PLATE_CENTER.x + 1e-4, "the act volume centers under the plate")
 	assert_float_in_range(Hallway.switch_act_center().z, Hallway.SWITCH_PLATE_CENTER.z - 1e-4, Hallway.SWITCH_PLATE_CENTER.z + 1e-4, "the act volume centers under the plate")
 	var hatch := Vector2(game.registry.hatch().center.x, game.registry.hatch().center.y)
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
 	assert_float_in_range(hatch.distance_to(act), 0.0, PlayerMotion.HATCH_INTERACT_REACH,
 		"the beside-door plate sits inside the doorway's press overlap")
+	var pane: MeshInstance3D = switch_group.get_node("GlassPane")
+	var shards: Node3D = switch_group.get_node("GlassShards")
+	assert_true(pane != null and shards != null, "the switch carries a glass cover and its shards")
+	assert_float_in_range(pane.position.x,
+		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_GLASS_STANDOFF - 1e-4,
+		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_GLASS_STANDOFF + 1e-4,
+		"the pane stands proud of the dome's apex")
+	assert_true(pane.visible, "the glass cover starts intact")
+	assert_false(shards.visible, "the shards hide until the smash")
+	assert_true(hallway.switch_glass_intact(), "the cover reads intact before the flip")
+
+## The break-glass cover: the flip's press smashes the pane the frame
+## the hallway lights — pane hidden, shards hanging — and a hallway
+## built from an already-lit game starts with the cover broken, so no
+## resumed scene shows glass over a lit switch.
+func test_the_flip_smashes_the_glass_cover() -> void:
+	var game := _awake_game()
+	var hallway := Hallway.build(game)
+	assert_true(hallway.switch_glass_intact(), "the cover reads intact before the flip")
+	game.light_hallway()
+	hallway.process_frame(Sim.LOGICAL_TICK_SECS)
+	assert_false(hallway.switch_glass_intact(), "the flip smashed the cover")
+	assert_false(hallway.get_node("HallSwitch").get_node("GlassPane").visible, "the pane hides after the smash")
+	assert_true(hallway.get_node("HallSwitch").get_node("GlassShards").visible, "the shards hang after the smash")
+	var lit_game := _awake_game()
+	lit_game.light_hallway()
+	var lit_hallway := Hallway.build(lit_game)
+	assert_false(lit_hallway.switch_glass_intact(), "a hallway built from an already-lit game starts broken")
+	assert_false(lit_hallway.get_node("HallSwitch").get_node("GlassPane").visible, "the resumed pane starts hidden")
 
 func test_hallway_holds_no_smoke() -> void:
 	var game := _awake_game()

@@ -4,9 +4,10 @@ extends Node3D
 ## milestone): the door now opens on act into a straight crew corridor
 ## running out from the doorway — double the stasis room's length, the
 ## pod bay's aisle width, the room's ceiling height. Closed side doors
-## read crew passage, and a red domed pushbutton beside the doorway, on
-## the pierced wall's hall face, lights the hall's red emergency
-## fixtures — dark until the flip, steady red after it, with no blackout
+## read crew passage, and an amber break-glass switch beside the
+## doorway, on the pierced wall's hall face, lights the hall's red
+## emergency fixtures — the flip's press smashes the glass cover, dark
+## until the flip, steady red after it, with no blackout
 ## trick: the fixtures simply hold level zero. Since issue #59 the north
 ## wall is pierced at the power door and the power room module owns the
 ## room behind it; when the secondary power activates, the red emergency
@@ -59,15 +60,27 @@ const POWER_DOOR_X: float = 27.0
 ## The switch plate beside the door: proud of the pierced wall's hall
 ## face, at working height on the latch side of the aperture — the
 ## button sits next to the door it lights, one arm's reach from the
-## threshold. A small dark plate with a domed red pushbutton, the
-## fuel-stop pattern. No emission — before the flip it is invisible in
-## the dark by nature of the darkness.
+## threshold. A safety-amber plate with a domed red pushbutton behind
+## a breakable glass cover, the emergency-call pattern: the amber, the
+## dome, and the pane carry faint emissions so the switch reads in the
+## dark hall, and the flip's press smashes the glass off the dome.
 const SWITCH_PLATE_SIZE: Vector3 = Vector3(0.04, 0.24, 0.16)
 const SWITCH_PLATE_CENTER: Vector3 = Vector3(
 	HALL_START_X + WALL + SWITCH_PLATE_SIZE.x / 2.0, 1.25, 0.85)
 const SWITCH_DOME_RADIUS: float = 0.055
 const SWITCH_DOME_COLOR: Color = Color(0.55, 0.04, 0.03)
-const SWITCH_PLATE_SHADE: float = 0.16
+const SWITCH_PLATE_COLOR: Color = Color(0.78, 0.56, 0.05)
+const SWITCH_PLATE_EMISSION: float = 0.25
+const SWITCH_DOME_EMISSION: float = 0.55
+
+## The breakable glass cover: a thin transparent pane standing proud of
+## the dome's apex, tinted and faintly emissive so it reads as glass in
+## the dark. The flip shatters the pane into the static shard rims left
+## hanging on the plate — one press smashes through and lights the hall.
+const SWITCH_GLASS_SIZE: Vector3 = Vector3(0.012, 0.19, 0.135)
+const SWITCH_GLASS_COLOR: Color = Color(0.62, 0.74, 0.82, 0.35)
+const SWITCH_GLASS_EMISSION: float = 0.06
+const SWITCH_GLASS_STANDOFF: float = SWITCH_DOME_RADIUS * 1.9
 
 ## The hallway's fixtures hold the stasis bay's exact style and levels:
 ## a pair over every berth station, the power door's station included,
@@ -100,6 +113,9 @@ var _white_lights: Array[OmniLight3D] = []
 var _white_lenses: Array[MeshInstance3D] = []
 var _white_lens_mesh: BoxMesh = null
 var _white_lens_material: StandardMaterial3D = null
+var _glass_pane: MeshInstance3D = null
+var _glass_shards: Node3D = null
+var _glass_broken: bool = false
 var _remainder: float = 0.0
 
 ## The pierced +X wall: the original wall slab's envelope with the
@@ -351,7 +367,12 @@ static func build(game: Game) -> Hallway:
 		doors.add_child(_box_instance(placement, door_material))
 	hallway.add_child(doors)
 
-	hallway.add_child(_build_switch())
+	var switch_group := _build_switch()
+	hallway._glass_pane = switch_group.get_node("GlassPane")
+	hallway._glass_shards = switch_group.get_node("GlassShards")
+	hallway.add_child(switch_group)
+	if game.hallway_lit:
+		hallway._break_glass()
 
 	for fixture_transform: Transform3D in fixture_transforms():
 		hallway.add_child(hallway._fixture(fixture_transform, level))
@@ -431,9 +452,10 @@ func _white_fixture(station_x: float, level: float) -> Node3D:
 	_white_lenses.append(lens)
 	return fixture
 
-## The fuel-stop switch beside the door: small dark plate, domed red
-## pushbutton facing the hall. Plain albedo only — the dark hall hides
-## it until the fixtures light.
+## The emergency-call switch beside the door: safety-amber plate, domed
+## red pushbutton facing the hall behind a breakable glass pane, and
+## the shard rims the smash leaves hanging. The amber, the dome, and
+## the pane glow faintly so the switch reads in the dark hall.
 static func _build_switch() -> Node3D:
 	var group := Node3D.new()
 	group.name = "HallSwitch"
@@ -443,7 +465,12 @@ static func _build_switch() -> Node3D:
 	var plate_mesh := BoxMesh.new()
 	plate_mesh.size = SWITCH_PLATE_SIZE
 	plate.mesh = plate_mesh
-	plate.material_override = _flat_grey(SWITCH_PLATE_SHADE)
+	var plate_material := StandardMaterial3D.new()
+	plate_material.albedo_color = SWITCH_PLATE_COLOR
+	plate_material.roughness = 0.55
+	plate_material.emission_enabled = true
+	plate_material.emission = SWITCH_PLATE_COLOR * SWITCH_PLATE_EMISSION
+	plate.material_override = plate_material
 	group.add_child(plate)
 	var dome := MeshInstance3D.new()
 	dome.name = "Dome"
@@ -456,9 +483,67 @@ static func _build_switch() -> Node3D:
 	var dome_material := StandardMaterial3D.new()
 	dome_material.albedo_color = SWITCH_DOME_COLOR
 	dome_material.roughness = 0.35
+	dome_material.emission_enabled = true
+	dome_material.emission = SWITCH_DOME_COLOR * SWITCH_DOME_EMISSION
 	dome.material_override = dome_material
 	group.add_child(dome)
+	var glass_material := StandardMaterial3D.new()
+	glass_material.albedo_color = SWITCH_GLASS_COLOR
+	glass_material.roughness = 0.05
+	glass_material.metallic = 0.1
+	glass_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass_material.emission_enabled = true
+	glass_material.emission = Color(
+		SWITCH_GLASS_COLOR.r, SWITCH_GLASS_COLOR.g, SWITCH_GLASS_COLOR.b) * SWITCH_GLASS_EMISSION
+	var pane := MeshInstance3D.new()
+	pane.name = "GlassPane"
+	var pane_mesh := BoxMesh.new()
+	pane_mesh.size = SWITCH_GLASS_SIZE
+	pane.mesh = pane_mesh
+	pane.material_override = glass_material
+	pane.position = Vector3(
+		SWITCH_PLATE_SIZE.x / 2.0 + SWITCH_GLASS_STANDOFF, 0.0, 0.0)
+	group.add_child(pane)
+	group.add_child(_build_switch_shards(glass_material))
 	return group
+
+## The static shards the smash leaves: four tilted glass fragments
+## hanging on the pane's plane, authored deterministically — no
+## particles, the same frozen-cosmetics rule as the ceiling damage.
+## Hidden until the flip breaks the cover.
+static func _build_switch_shards(glass_material: StandardMaterial3D) -> Node3D:
+	var shards := Node3D.new()
+	shards.name = "GlassShards"
+	shards.visible = false
+	var placements := [
+		Placement.SolidPlacement.new(
+			Vector3(-0.06, 0.075, 0.012),
+			Vector3(0.012, 0.05, 0.035),
+			Quaternion(Vector3.FORWARD, 0.35) * Quaternion(Vector3.UP, 0.25)
+		),
+		Placement.SolidPlacement.new(
+			Vector3(0.055, -0.070, -0.010),
+			Vector3(0.012, 0.045, 0.030),
+			Quaternion(Vector3.FORWARD, -0.45) * Quaternion(Vector3.UP, -0.35)
+		),
+		Placement.SolidPlacement.new(
+			Vector3(0.010, 0.080, -0.055),
+			Vector3(0.012, 0.055, 0.028),
+			Quaternion(Vector3.FORWARD, 0.55) * Quaternion(Vector3.UP, -0.5)
+		),
+		Placement.SolidPlacement.new(
+			Vector3(-0.045, -0.065, 0.048),
+			Vector3(0.012, 0.040, 0.026),
+			Quaternion(Vector3.FORWARD, -0.30) * Quaternion(Vector3.UP, 0.6)
+		),
+	]
+	for placement: Placement.SolidPlacement in placements:
+		var shard := _box_instance(placement, glass_material)
+		shard.position = Vector3(
+			SWITCH_PLATE_SIZE.x / 2.0 + SWITCH_GLASS_STANDOFF, 0.0, 0.0) \
+			+ (placement.rotation * placement.center)
+		shards.add_child(shard)
+	return shards
 
 ## The hall's ceiling damage, in the stasis room's language: tray runs
 ## tipped off level, hanging wire loops beneath them. Dressing only —
@@ -520,11 +605,15 @@ func _physics_process(_delta: float) -> void:
 ## retarget only on the sim-side target change (the switch flip, the
 ## secondary power's activation), consume whole logical ticks from the
 ## elapsed seconds, then project both fade levels onto the fixture
-## energies and the shared lens emissions. The emergency red holds its
-## level while the corridor is on the switch; once the secondary power
-## activates, the red hands off to the regular white strips. The sim's
-## Game container is the only authority; this writes render state.
+## energies and the shared lens emissions. The flip's press smashes the
+## switch's glass cover the frame the hallway lights. The emergency red
+## holds its level while the corridor is on the switch; once the
+## secondary power activates, the red hands off to the regular white
+## strips. The sim's Game container is the only authority; this writes
+## render state.
 func process_frame(delta_secs: float) -> void:
+	if _game.hallway_lit and not _glass_broken:
+		_break_glass()
 	var red_target := 1.0 if (_game.hallway_lit and not _game.power_active) else 0.0
 	var white_target := 1.0 if _game.power_active else 0.0
 	if _fade.target() != red_target:
@@ -568,6 +657,23 @@ func level() -> float:
 ## The regular white strips' level.
 func white_level() -> float:
 	return _white_fade.intensity()
+
+## The flip's smash: hide the pane, show the hanging shards. Cosmetic
+## only — the flip's authority stays with the sim's Game container, and
+## building the hallway from an already-lit game starts the cover
+## broken so a resumed scene never shows glass over a lit switch.
+func _break_glass() -> void:
+	if _glass_broken:
+		return
+	_glass_broken = true
+	if _glass_pane != null:
+		_glass_pane.visible = false
+	if _glass_shards != null:
+		_glass_shards.visible = true
+
+## The glass cover's state: intact until the flip smashes it.
+func switch_glass_intact() -> bool:
+	return not _glass_broken
 
 func is_settled() -> bool:
 	return _fade.is_settled() and _white_fade.is_settled()

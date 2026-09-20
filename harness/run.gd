@@ -419,10 +419,10 @@ func verify_rod_pickup(report) -> void:
 	failures.append("rod-picked-up beat has no carried evidence at or before tick %d" % beat_tick)
 
 ## The power room beats' machine checks (issue #59): the power door
-## opened on its ungated press, the console's Inactivo label, the
-## Activo activation with the generator lit, the hallway's white
-## hand-off with the power room white too, and the stasis bay keeping
-## its red through it all. Scenarios without the beats skip them.
+## opened on its ungated press, the Activado activation with the
+## generator lit, the hallway's white hand-off with the power room
+## white too, and the stasis bay keeping its red through it all.
+## Scenarios without the beats skip them.
 func verify_power(report) -> void:
 	if report.beats.has("power-door-opened"):
 		var door_tick: int = report.beats["power-door-opened"].tick
@@ -434,17 +434,6 @@ func verify_power(report) -> void:
 				break
 		if not door_ok:
 			failures.append("power-door-opened beat has no open-door evidence at or before tick %d" % door_tick)
-	if report.beats.has("console-inactive"):
-		var inactive_tick: int = report.beats["console-inactive"].tick
-		var inactive_ok := false
-		for event: Dictionary in report.events:
-			if event.kind == "console" and String(event.state) == "inactive" \
-					and String(event.label).find("Inactivo") >= 0 \
-					and int(event.tick) <= inactive_tick + BEAT_TICK_HEADROOM:
-				inactive_ok = true
-				break
-		if not inactive_ok:
-			failures.append("console-inactive beat has no Inactivo-label evidence at or before tick %d" % inactive_tick)
 	if report.beats.has("power-active"):
 		var active_tick: int = report.beats["power-active"].tick
 		var console_ok := false
@@ -453,13 +442,13 @@ func verify_power(report) -> void:
 			if not event.has("tick") or int(event.tick) > active_tick + BEAT_TICK_HEADROOM:
 				continue
 			if event.kind == "console" and String(event.state) == "active" \
-					and String(event.label).find("Activo") >= 0:
+					and String(event.label).find("Activado") >= 0:
 				console_ok = true
 			if event.kind == "power" and bool(event.active) \
 					and float(event.generator_lit) >= 0.95:
 				generator_ok = true
 		if not console_ok:
-			failures.append("power-active beat has no Activo-label evidence at or before tick %d" % active_tick)
+			failures.append("power-active beat has no Activado-label evidence at or before tick %d" % active_tick)
 		if not generator_ok:
 			failures.append("power-active beat has no generator-lit evidence at or before tick %d" % active_tick)
 	if report.beats.has("hall-white"):

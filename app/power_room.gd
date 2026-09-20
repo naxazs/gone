@@ -9,7 +9,7 @@ extends Node3D
 ## looks inexplicably new next to the damaged walls (the stasis pods
 ## share that too-new quality; the reason is a later reveal). Under the
 ## emergency circuit the room reads red like the hall; actioning the
-## working console twice (Inactivo → Activo) lights the generator and
+## working console once (the Activado label) lights the generator and
 ## hands the hallway and this room over to dim regular white while the
 ## stasis bay keeps its red. Colliders extend the hallway's set from
 ## solids authored here (Placement stays untouched): one construction
@@ -83,8 +83,7 @@ const BUSTED_SCREEN_TILT: float = 0.55
 ## tests and the lane's machine checks. The screen renders the heading
 ## small and the state word large — the readable control-display look.
 const LABEL_HEAD: String = "Control de energía secundaria:"
-const LABEL_TAIL_INACTIVE: String = "Inactivo"
-const LABEL_TAIL_ACTIVE: String = "Activo"
+const LABEL_TAIL_ACTIVE: String = "Activado"
 
 ## The secondary generator at the room's center: a sleek black column,
 ## unaged next to the damaged consoles and walls, reading as a black
@@ -306,8 +305,6 @@ static func console_label_flat(state: int) -> String:
 
 static func _label_tail(state: int) -> String:
 	match state:
-		Game.ConsoleState.INACTIVE:
-			return LABEL_TAIL_INACTIVE
 		Game.ConsoleState.ACTIVE:
 			return LABEL_TAIL_ACTIVE
 		_:
@@ -317,8 +314,6 @@ static func console_state_name(state: int) -> String:
 	match state:
 		Game.ConsoleState.STANDBY:
 			return "standby"
-		Game.ConsoleState.INACTIVE:
-			return "inactive"
 		Game.ConsoleState.ACTIVE:
 			return "active"
 		_:
@@ -675,8 +670,8 @@ func _apply_generator_glow(level: float) -> void:
 		_generator_ring_material.emission = emissive
 
 ## The working console's screen: the standby glow carries no text; the
-## Inactivo and Activo labels carry the Spanish state wording pinned by
-## the tests and the lane's machine checks.
+## Activado label carries the Spanish state wording pinned by the tests
+## and the lane's machine checks.
 func _apply_console_state(state: int) -> void:
 	_console_state = state
 	if _screen_material == null or _label == null:
@@ -690,8 +685,6 @@ func _apply_console_state(state: int) -> void:
 	match state:
 		Game.ConsoleState.STANDBY:
 			emission = 0.10
-		Game.ConsoleState.INACTIVE:
-			emission = 0.30
 		Game.ConsoleState.ACTIVE:
 			emission = 0.45
 	_screen_material.emission = Lighting.REGULAR_WHITE * emission

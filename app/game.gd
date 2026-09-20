@@ -21,9 +21,9 @@ var exit_path: Exit.ExitPath
 ## room behind the corridor's last right-hand door: its doorway opens
 ## on act (no rod gate — it is a crew door, not a pry-bar hatch), and
 ## its working console walks the secondary power's state machine — one
-## press reads the label, a second activates the generator, and the
-## hallway plus the power room hand their red emergency light over to
-## dim regular white while the stasis bay keeps its red.
+## press activates the generator, and the hallway plus the power room
+## hand their red emergency light over to dim regular white while the
+## stasis bay keeps its red.
 var door_open: bool = false
 var hallway_lit: bool = false
 var power_door_open: bool = false
@@ -31,8 +31,8 @@ var console_state: int = ConsoleState.STANDBY
 var power_active: bool = false
 
 ## The working console's Spanish label state machine: standby glow
-## (no text), first press shows Inactivo, second press activates.
-enum ConsoleState { STANDBY, INACTIVE, ACTIVE }
+## (no text), the single press activates and shows Activado.
+enum ConsoleState { STANDBY, ACTIVE }
 
 func _init() -> void:
 	registry = Pods.PodRegistry.frozen()
@@ -69,15 +69,12 @@ func light_hallway() -> void:
 	hallway_lit = true
 
 ## Advance the working console's state machine exactly one step:
-## standby → inactive (the label), inactive → active (the generator
-## lights, the corridor and the power room go regular white). Returns
-## true when a step landed — the caller consumes a press only then.
+## standby → active (the generator lights, the corridor and the power
+## room go regular white). Returns true when a step landed — the
+## caller consumes a press only then.
 func press_console() -> bool:
 	match console_state:
 		ConsoleState.STANDBY:
-			console_state = ConsoleState.INACTIVE
-			return true
-		ConsoleState.INACTIVE:
 			console_state = ConsoleState.ACTIVE
 			power_active = true
 			return true

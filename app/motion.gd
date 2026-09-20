@@ -252,11 +252,11 @@ func power_door_slab_offset() -> Vector3:
 
 ## Act at the power room's working console: while standing in reach of
 ## the screen, one interact press advances the secondary power's state
-## machine one step — standby shows the Inactivo label, inactive
-## activates the generator — and is consumed only when a step lands.
-## A press at the dead consoles or at an already-active console owns
-## nothing and stays on the channel, exactly like the other interact
-## consumers. Returns true when the press was consumed at the console.
+## machine one step — standby activates the generator — and is consumed
+## only when a step lands. A press at the dead consoles or at an
+## already-active console owns nothing and stays on the channel,
+## exactly like the other interact consumers. Returns true when the
+## press was consumed at the console.
 func interact_with_console(plane: InputPlane, game: Game) -> bool:
 	if state() != BodyState.WALK:
 		return false
