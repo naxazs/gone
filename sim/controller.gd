@@ -22,8 +22,10 @@ const PENETRATION_TOLERANCE: float = 0.005
 ## Free-space margin required around the capsule at pod exit, in meters.
 const POD_EXIT_CLEARANCE: float = 0.15
 
-## Steady survival walking speed, in meters per second.
-const SURVIVAL_WALK_SPEED: float = 0.9
+## Steady survival walking speed, in meters per second. Tuned up from
+## the frozen 0.9: the corridor walks read sluggish at shuffle pace, and
+## a brisk survivor stride fits the steadiness doctrine just as well.
+const SURVIVAL_WALK_SPEED: float = 1.4
 
 ## Walk speed multiplier applied at the first unsteady step after standing.
 const STEADY_INITIAL_SPEED_FACTOR: float = 0.35
