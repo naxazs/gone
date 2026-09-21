@@ -80,6 +80,11 @@ func _physics_process(delta: float) -> void:
 	motion.flip_hallway_switch(plane, game)
 	motion.interact_with_power_door(plane, game)
 	motion.interact_with_console(plane, game)
+	# The exit key rides the same press channel as the interactions:
+	# one fresh edge asks the tree to stop, whatever the wake phase.
+	if plane.take_press(InputPlane.Buttons.EXIT):
+		get_tree().quit()
+		return
 	if hatch != null and hatch is Hatch:
 		hatch.set_door_offset(motion.door_slab_offset())
 	if power_room != null:
@@ -113,6 +118,8 @@ func _collect_device_input(delta: float) -> void:
 		plane.offer_press(InputPlane.Buttons.ACTIVATE)
 	if Input.is_action_just_pressed("interact"):
 		plane.offer_press(InputPlane.Buttons.INTERACT)
+	if Input.is_action_just_pressed("exit"):
+		plane.offer_press(InputPlane.Buttons.EXIT)
 	if _mouse_pixels != Vector2.ZERO:
 		plane.offer_look_pixels(_mouse_pixels)
 		_mouse_pixels = Vector2.ZERO

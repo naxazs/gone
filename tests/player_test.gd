@@ -260,6 +260,26 @@ func test_look_integration_clamps_pitch_and_wraps_yaw() -> void:
 	_near_float(pixels.x, -10.0 * InputPlane.LOOK_SENSITIVITY, "mouse right decreases yaw")
 	_near_float(pixels.y, 5.0 * InputPlane.LOOK_SENSITIVITY, "mouse up increases pitch")
 
+## The Escape key rides the press channel as the EXIT button, and the
+## gameplay consumers must never eat it: whatever the state, the edge
+## stays queued for the rig's quit check to take.
+func test_the_exit_edge_survives_the_interaction_consumers() -> void:
+	var game := _awake_game()
+	var motion := PlayerMotion.new()
+	var plane := InputPlane.new()
+	_stand(motion, game, plane)
+	motion.rod_carried = true
+	plane.offer_press(InputPlane.Buttons.EXIT)
+	plane.offer_movement(1.0, 0.0)
+	motion.advance(plane, game, 0.0, DT)
+	assert_false(motion.pickup_rod(plane), "the pickup leaves the exit edge alone")
+	assert_false(motion.interact_with_door(plane, game), "the door leaves the exit edge alone")
+	assert_false(motion.flip_hallway_switch(plane, game), "the switch leaves the exit edge alone")
+	assert_false(motion.interact_with_power_door(plane, game), "the power door leaves the exit edge alone")
+	assert_false(motion.interact_with_console(plane, game), "the console leaves the exit edge alone")
+	assert_true(plane.take_press(InputPlane.Buttons.EXIT), "the exit edge stays on the channel for the rig's quit check")
+	plane.end_frame()
+
 func test_standing_and_get_up_eyes() -> void:
 	var capsule := Resolve.Capsule.new()
 	capsule.foot = Vector3(1.0, Controller.CAPSULE_RADIUS + Controller.PENETRATION_TOLERANCE, 2.0)

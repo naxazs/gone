@@ -1146,16 +1146,10 @@
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 479,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"pitch_deg": 0.00000370600166374569,
 			"tick": 480,
-			"type": "move"
+			"type": "look",
+			"yaw_deg": 84.185383988801
 		},
 		{
 			"forward": 1.0,
@@ -1278,10 +1272,16 @@
 			"type": "move"
 		},
 		{
-			"pitch_deg": 0.00000370600166374569,
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 501,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 502,
-			"type": "look",
-			"yaw_deg": 84.303803641229
+			"type": "move"
 		},
 		{
 			"forward": 1.0,
@@ -1662,46 +1662,21 @@
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 566,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"pitch_deg": -64.9999997090929,
 			"tick": 567,
-			"type": "move"
+			"type": "look",
+			"yaw_deg": -0.0000128161809622532
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"button": "interact",
 			"tick": 568,
-			"type": "move"
+			"type": "press"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 569,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 570,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 571,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
+			"pitch_deg": 65.0000026688793,
 			"tick": 572,
-			"type": "move"
+			"type": "look",
+			"yaw_deg": -90.2030011906299
 		},
 		{
 			"forward": 1.0,
@@ -1866,21 +1841,46 @@
 			"type": "move"
 		},
 		{
-			"pitch_deg": -64.9999997090929,
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 600,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 601,
-			"type": "look",
-			"yaw_deg": 0.0000006058101989534
+			"type": "move"
 		},
 		{
-			"button": "interact",
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 602,
-			"type": "press"
+			"type": "move"
 		},
 		{
-			"pitch_deg": 65.0000026688793,
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 603,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 604,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
+			"tick": 605,
+			"type": "move"
+		},
+		{
+			"forward": 1.0,
+			"strafe": 0.0,
 			"tick": 606,
-			"type": "look",
-			"yaw_deg": -90.4591636735302
+			"type": "move"
 		},
 		{
 			"forward": 1.0,
@@ -2861,386 +2861,14 @@
 			"type": "move"
 		},
 		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 770,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 771,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 772,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 773,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 774,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 775,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 776,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 777,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 778,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 779,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 780,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 781,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 782,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 783,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 784,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 785,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 786,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 787,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 788,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 789,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 790,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 791,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 792,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 793,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 794,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 795,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 796,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 797,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 798,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 799,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 800,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 801,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 802,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 803,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 804,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 805,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 806,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 807,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 808,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 809,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 810,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 811,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 812,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 813,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 814,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 815,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 816,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 817,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 818,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 819,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 820,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 821,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 822,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 823,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 824,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 825,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 826,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 827,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 828,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 829,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 830,
-			"type": "move"
-		},
-		{
-			"forward": 1.0,
-			"strafe": 0.0,
-			"tick": 831,
-			"type": "move"
-		},
-		{
 			"pitch_deg": -24.9999980015456,
-			"tick": 833,
+			"tick": 771,
 			"type": "look",
-			"yaw_deg": -0.00000257351565612561
+			"yaw_deg": 0.00000144251754856188
 		},
 		{
 			"button": "interact",
-			"tick": 834,
+			"tick": 772,
 			"type": "press"
 		}
 	],
@@ -3263,23 +2891,23 @@
 		},
 		{
 			"name": "mid-room",
-			"tick": 502
+			"tick": 480
 		},
 		{
 			"name": "rod-picked-up",
-			"tick": 606
+			"tick": 572
 		},
 		{
 			"name": "at-door",
-			"tick": 833
+			"tick": 771
 		},
 		{
 			"name": "door-opened",
-			"tick": 897
+			"tick": 835
 		}
 	],
 	"content": "gameplay",
-	"max_frames": 1797,
+	"max_frames": 1735,
 	"mode": "capture",
 	"name": "gameplay-full",
 	"seed": 1234,
