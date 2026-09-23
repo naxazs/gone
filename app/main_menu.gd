@@ -1,16 +1,17 @@
 class_name MainMenu
 extends Control
 ## Opening title screen. A robot peers through a door it has pulled open:
-## only its plated face is visible, and its single eye tracks the pointer
-## until the player chooses to wake.
+## one intact eye tracks the pointer while its other socket hangs cracked
+## and dead, until the player chooses to wake.
 
 signal play_requested
 signal quit_requested
 
-const FACE_SIZE := Vector2(360.0, 230.0)
-const EYE_SIZE := Vector2(150.0, 62.0)
-const PUPIL_RADIUS: float = 14.0
-const PUPIL_TRAVEL: float = 27.0
+const FACE_SIZE := Vector2(380.0, 240.0)
+const EYE_SIZE := Vector2(112.0, 58.0)
+const EYE_SPACING: float = 76.0
+const PUPIL_RADIUS: float = 11.0
+const PUPIL_TRAVEL: float = 18.0
 const BUTTON_SIZE := Vector2(260.0, 52.0)
 
 var _pointer: Vector2 = Vector2.ZERO
@@ -103,7 +104,8 @@ func _draw_robot_face(center: Vector2) -> void:
 	for slot: int in range(7):
 		var x := center.x - 54.0 + float(slot) * 18.0
 		draw_line(Vector2(x, center.y + 78.0), Vector2(x, center.y + 91.0), Color("394144"), 3.0)
-	_draw_eye(center + Vector2(0.0, -18.0))
+	_draw_eye(center + Vector2(-EYE_SPACING, -18.0))
+	_draw_broken_eye(center + Vector2(EYE_SPACING, -18.0))
 
 func _draw_eye(center: Vector2) -> void:
 	var tracking := pupil_offset(center, _pointer)
@@ -113,9 +115,26 @@ func _draw_eye(center: Vector2) -> void:
 		Vector2(-EYE_SIZE.x * 0.52, 0.0), Vector2(0.0, -EYE_SIZE.y * 0.62),
 		Vector2(EYE_SIZE.x * 0.52, 0.0), Vector2(0.0, EYE_SIZE.y * 0.62),
 	]), Color("8e252c"), 4.0, true)
-	draw_circle(tracking, PUPIL_RADIUS + 9.0, Color("781d23"))
+	draw_circle(tracking, PUPIL_RADIUS + 8.0, Color("781d23"))
 	draw_circle(tracking, PUPIL_RADIUS, Color("030505"))
-	draw_circle(tracking + Vector2(-4.0, -4.0), 3.0, Color(0.9, 0.93, 0.9, 0.8))
+	draw_circle(tracking + Vector2(-3.0, -3.0), 2.5, Color(0.9, 0.93, 0.9, 0.8))
+	draw_set_transform(Vector2.ZERO)
+
+## The second eye is physically present but destroyed: a dark socket,
+## displaced lens fragment, and asymmetrical fracture lines make the
+## failure legible instead of looking like a closed eyelid.
+func _draw_broken_eye(center: Vector2) -> void:
+	draw_set_transform(center)
+	_draw_eye_shape(Vector2.ZERO, EYE_SIZE * 0.5, Color("171b1c"))
+	draw_circle(Vector2(8.0, 7.0), PUPIL_RADIUS + 10.0, Color("080a0a"))
+	draw_circle(Vector2(13.0, 12.0), PUPIL_RADIUS - 3.0, Color("431116"))
+	for fracture: PackedVector2Array in [
+		PackedVector2Array([Vector2(-54.0, -2.0), Vector2(-25.0, 4.0), Vector2(-8.0, 21.0)]),
+		PackedVector2Array([Vector2(-7.0, -27.0), Vector2(2.0, -9.0), Vector2(27.0, 1.0)]),
+		PackedVector2Array([Vector2(4.0, -7.0), Vector2(34.0, -21.0), Vector2(55.0, -13.0)]),
+		PackedVector2Array([Vector2(1.0, 8.0), Vector2(25.0, 27.0), Vector2(44.0, 22.0)]),
+	]:
+		draw_polyline(fracture, Color("8e252c"), 3.0, true)
 	draw_set_transform(Vector2.ZERO)
 
 static func pupil_offset(eye_center: Vector2, pointer: Vector2) -> Vector2:

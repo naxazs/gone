@@ -65,6 +65,11 @@ func _physics_process(delta: float) -> void:
 	_collect_device_input(delta)
 	if scripted and adapter != null:
 		adapter.offer_tick(plane)
+	if game.is_dead():
+		if plane.take_press(InputPlane.Buttons.EXIT):
+			get_tree().quit()
+		plane.end_frame()
+		return
 	_integrate_look()
 	motion.advance(plane, game, _look_yaw, delta)
 	# The rod, the door, the hallway switch, the power door, and the
@@ -94,6 +99,10 @@ func _physics_process(delta: float) -> void:
 		get_tree().quit(1)
 		return
 	position = motion.eye(game)
+	if motion.state() == PlayerMotion.BodyState.WALK and game.door_open:
+		var foot := motion.capsule().foot
+		if foot.x > Hallway.HALL_START_X + Hallway.WALL:
+			game.escape_poison_zone()
 	plane.end_frame()
 
 ## The device producer: held InputMap actions become the plane's

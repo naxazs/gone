@@ -15,6 +15,7 @@ var hallway: Hallway
 var power_room: PowerRoom
 var wake_pass: WakePass
 var wake_present: WakePresent
+var survival_hud: SurvivalHUD
 var menu_layer: CanvasLayer
 var menu: MainMenu
 
@@ -60,6 +61,8 @@ func _start_game() -> void:
 	add_child(power_room)
 	_add_player()
 	_add_wake_presentation()
+	survival_hud = SurvivalHUD.build(game)
+	add_child(survival_hud)
 
 func _quit_game() -> void:
 	get_tree().quit()

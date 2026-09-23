@@ -30,8 +30,18 @@ var power_door_open: bool = false
 var console_state: int = ConsoleState.STANDBY
 var power_active: bool = false
 
-## The working console's Spanish label state machine: standby glow
-## (no text), the single press activates and shows Activado.
+## The survivor wakes poisoned in the leaking stasis bay. The countdown
+## begins once the wake presentation reaches AwakeInPod; crossing the
+## opened hatch into the hallway ends the exposure, while running out
+## of ticks makes death terminal.
+const POISON_LIMIT_TICKS: int = 45 * 60
+var poison_state: int = PoisonState.POISONED
+var poison_ticks_remaining: int = POISON_LIMIT_TICKS
+
+enum PoisonState { POISONED, ESCAPED, DEAD }
+
+## The working console's Spanish label state machine: standby identifies
+## the action, and the single press activates and shows Activado.
 enum ConsoleState { STANDBY, ACTIVE }
 
 func _init() -> void:
@@ -87,9 +97,29 @@ func press_console() -> bool:
 func emergency_circuit_target() -> float:
 	return 1.0 if Power.emergency_fixtures_lit(power.state()) else 0.0
 
+## End the toxic exposure after the player has physically crossed the
+## opened stasis-room hatch. Death is terminal, so a late escape cannot
+## resurrect the survivor.
+func escape_poison_zone() -> void:
+	if poison_state == PoisonState.POISONED:
+		poison_state = PoisonState.ESCAPED
+
+func is_poisoned() -> bool:
+	return poison_state == PoisonState.POISONED
+
+func is_dead() -> bool:
+	return poison_state == PoisonState.DEAD
+
+func poison_seconds_remaining() -> int:
+	return ceili(float(poison_ticks_remaining) / float(Sim.LOGICAL_TICKS_PER_SECOND))
+
 ## One fixed logical tick, called from _physics_process at the project's
-## 60 Hz physics rate. The wake machine consumes nothing before its
-## readiness barrier opens, so the opening-beat state holds exactly as
-## authored while proving the fixed-rate wiring.
+## 60 Hz physics rate. The poison clock waits through the wake sequence
+## so the player receives its full budget after opening their eyes.
 func tick() -> void:
 	wake_state.tick()
+	if phase.current() == Phase.Wake.WAKING or poison_state != PoisonState.POISONED:
+		return
+	poison_ticks_remaining = maxi(poison_ticks_remaining - 1, 0)
+	if poison_ticks_remaining == 0:
+		poison_state = PoisonState.DEAD

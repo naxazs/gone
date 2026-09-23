@@ -248,7 +248,9 @@ func test_activation_hands_both_rooms_to_regular_white() -> void:
 		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
 		room.process_frame(Sim.LOGICAL_TICK_SECS)
 	assert_float_in_range(hallway.level(), 0.999, 1.001, "the corridor's red settles after the flip")
-	assert_float_in_range(room.level(), 0.999, 1.001, "the power room's red settles with the corridor")
+	assert_float_in_range(room.level(), -1e-4, 1e-4, "the second area stays completely dark before its button")
+	assert_float_in_range(room.white_level(), -1e-4, 1e-4, "no white fixture leaks before activation")
+	assert_float_in_range(room.generator_lit(), -1e-4, 1e-4, "the generator remains black before activation")
 	# The activation walk: the single press at the state machine.
 	assert_true(game.press_console(), "the activation press lands")
 	for _tick: int in range(Lighting.FIXTURE_SETTLE_TICKS):

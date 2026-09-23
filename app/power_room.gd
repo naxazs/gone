@@ -8,11 +8,11 @@ extends Node3D
 ## center holds the secondary generator, a sleek black column that
 ## looks inexplicably new next to the damaged walls (the stasis pods
 ## share that too-new quality; the reason is a later reveal). Under the
-## emergency circuit the room reads red like the hall; actioning the
-## working console once (the Activado label) lights the generator and
-## hands the hallway and this room over to dim regular white while the
-## stasis bay keeps its red. Colliders extend the hallway's set from
-## solids authored here (Placement stays untouched): one construction
+## room stays black behind its doorway until actioning the working
+## console once (the Activado label) lights the generator and the dim
+## regular white strips. The hallway hands red over to white at the same
+## moment while the stasis bay keeps its red. Colliders extend the
+## hallway's set from solids authored here (Placement stays untouched): one construction
 ## path — the scene spawns these placements verbatim and the collider
 ## set derives from the same data.
 
@@ -102,11 +102,9 @@ const GENERATOR_GLOW: Color = Color(0.80, 0.90, 1.00)
 const GENERATOR_EMISSIVE: float = 2.4
 const GENERATOR_LIGHT_ENERGY: float = 1.2
 
-## The room's fixtures mirror the hallway's pair of circuits: red
-## emergency domes on the walls (dark until the beside-door switch
-## lights the corridor's circuit) and regular white ceiling strips down
-## the room's centerline (dead until the secondary power activates).
-## The stasis bay's red circuit is separate and keeps its red.
+## The room's red emergency domes are dead remnants; unlike the hallway,
+## this second area remains black until the console activates its regular
+## white ceiling strips. The stasis bay's red circuit stays separate.
 const FIXTURE_WALL_MOUNT_Y: float = Lighting.WALL_MOUNT_HEIGHT
 const FIXTURE_STANDOFF: float = Lighting.WALL_STANDOFF
 const RED_FIXTURE_POSITIONS: Array[Vector3] = [
@@ -366,7 +364,7 @@ static func build(game: Game) -> PowerRoom:
 	var room := PowerRoom.new()
 	room.name = "PowerRoom"
 	room._game = game
-	var level := 1.0 if (game.hallway_lit and not game.power_active) else 0.0
+	var level := 0.0
 	var white_level := 1.0 if game.power_active else 0.0
 	var glow_level := 1.0 if game.power_active else 0.0
 
@@ -630,14 +628,11 @@ func _white_fixture(station_x: float, station_z: float, level: float) -> Node3D:
 func _physics_process(_delta: float) -> void:
 	process_frame(Sim.LOGICAL_TICK_SECS)
 
-## One render-bridge frame, the hallway's exact pattern: retarget only
-## on the sim-side target change, consume whole logical ticks, project
-## the fades onto the render state. The console's screen state reads
-## the sim's console state machine; the red emergency circuit holds the
-## corridor's level until the secondary power activates, then hands off
-## to the white strips and the generator's glow.
+## One render-bridge frame: the room's dead red circuit remains at zero
+## while the console state retargets the white strips and generator.
+## Whole logical ticks keep the activation fade deterministic.
 func process_frame(delta_secs: float) -> void:
-	var red_target := 1.0 if (_game.hallway_lit and not _game.power_active) else 0.0
+	var red_target := 0.0
 	var white_target := 1.0 if _game.power_active else 0.0
 	var glow_target := 1.0 if _game.power_active else 0.0
 	if _fade.target() != red_target:
