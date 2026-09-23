@@ -51,8 +51,10 @@ const POWER_DOOR_SLIDE_TICKS: int = 48
 const POWER_DOOR_SLIDE_DISTANCE: float = 1.15
 
 ## How close to the working console's screen, in meters on the floor
-## plane, an interact press must land to act at the console.
-const CONSOLE_ACT_REACH: float = 1.8
+## plane, an interact press must land to act at the console. The wider
+## envelope includes the whole keyboard shelf, so pressing beside its
+## prominent power key cannot miss because the capsule stopped short.
+const CONSOLE_ACT_REACH: float = 2.6
 
 enum DoorState { CLOSED, OPENING, OPEN }
 enum PowerDoorState { CLOSED, OPENING, OPEN }

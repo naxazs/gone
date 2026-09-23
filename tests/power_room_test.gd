@@ -89,8 +89,8 @@ func test_console_census_reads_exactly_one_working_screen() -> void:
 	assert_int_equal(stations[1].health, PowerRoom.CONSOLE_HEALTHS["active"], "the working console is the west wall's deep station")
 	# Every station's panel faces into the room, off its own wall.
 	assert_vec3_equal(PowerRoom.console_act_center(), Vector3(22.05, 0.0, -7.5), "the working console's act volume is pinned in front of its screen")
-	# The Spanish label state machine owns the screen's wording.
-	assert_true(PowerRoom.console_label(Game.ConsoleState.STANDBY) == "", "the standby screen carries no text")
+	# The Spanish label state machine makes the working control explicit.
+	assert_true(PowerRoom.console_label(Game.ConsoleState.STANDBY) == "Control de energía secundaria:\nPULSA PARA ENCENDER", "the standby screen tells the player what to do")
 	assert_true(PowerRoom.console_label(Game.ConsoleState.ACTIVE) == "Control de energía secundaria:\nActivado", "the press shows the Activado label")
 	assert_true(PowerRoom.console_label_flat(Game.ConsoleState.ACTIVE) == "Control de energía secundaria: Activado", "the machine-check form of the active label is pinned")
 	assert_true(PowerRoom.console_state_name(Game.ConsoleState.ACTIVE) == "active", "the active state's name is pinned")
@@ -266,7 +266,12 @@ func test_activation_hands_both_rooms_to_regular_white() -> void:
 func test_label_appears_after_the_first_press() -> void:
 	var game := _awake_game()
 	var room := PowerRoom.build(game)
-	assert_true(room.label_text() == "", "the standby screen renders no text")
+	assert_true(room.label_text() == "PULSA PARA ENCENDER", "the standby screen identifies the working control")
+	var power_buttons := 0
+	for child: Node in room.get_children():
+		if child.has_node("PowerButton"):
+			power_buttons += 1
+	assert_int_equal(power_buttons, 1, "exactly one large glowing power button marks the working console")
 	game.press_console()
 	room.process_frame(Sim.LOGICAL_TICK_SECS)
 	assert_true(room.label_text() == "Activado", "the screen renders Activado on the press")

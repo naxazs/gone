@@ -83,7 +83,10 @@ const BUSTED_SCREEN_TILT: float = 0.55
 ## tests and the lane's machine checks. The screen renders the heading
 ## small and the state word large — the readable control-display look.
 const LABEL_HEAD: String = "Control de energía secundaria:"
+const LABEL_TAIL_STANDBY: String = "PULSA PARA ENCENDER"
 const LABEL_TAIL_ACTIVE: String = "Activado"
+const POWER_BUTTON_SIZE: Vector3 = Vector3(0.18, 0.075, 0.14)
+const POWER_BUTTON_COLOR: Color = Color(0.12, 0.72, 0.88)
 
 ## The secondary generator at the room's center: a sleek black column,
 ## unaged next to the damaged consoles and walls, reading as a black
@@ -287,8 +290,8 @@ static func generator_solid() -> Placement.SolidPlacement:
 		)
 	)
 
-## The console label's two-line text for a state, or the empty string
-## while the screen sits at its standby glow.
+## The console label's two-line text: standby tells the player exactly
+## how to wake the circuit, then the same screen confirms activation.
 static func console_label(state: int) -> String:
 	var tail := _label_tail(state)
 	if tail.is_empty():
@@ -305,6 +308,8 @@ static func console_label_flat(state: int) -> String:
 
 static func _label_tail(state: int) -> String:
 	match state:
+		Game.ConsoleState.STANDBY:
+			return LABEL_TAIL_STANDBY
 		Game.ConsoleState.ACTIVE:
 			return LABEL_TAIL_ACTIVE
 		_:
@@ -489,6 +494,18 @@ func _build_console(station: ConsoleStation) -> Node3D:
 	shelf.material_override = _flat_grey(0.12)
 	shelf.position = Vector3(0.0, SHELF_CENTER_Y, 0.26)
 	group.add_child(shelf)
+	if station.health == CONSOLE_HEALTHS["active"]:
+		var power_button := MeshInstance3D.new()
+		power_button.name = "PowerButton"
+		power_button.mesh = _box_mesh(POWER_BUTTON_SIZE)
+		var power_material := StandardMaterial3D.new()
+		power_material.albedo_color = POWER_BUTTON_COLOR
+		power_material.roughness = 0.3
+		power_material.emission_enabled = true
+		power_material.emission = POWER_BUTTON_COLOR * 0.8
+		power_button.material_override = power_material
+		power_button.position = Vector3(0.31, SHELF_CENTER_Y + 0.075, 0.38)
+		group.add_child(power_button)
 	var button_index := 0
 	for row_z: float in GRID_ROWS_Z:
 		for column_x: float in GRID_COLUMNS_X:
@@ -669,9 +686,9 @@ func _apply_generator_glow(level: float) -> void:
 	if _generator_ring_material.emission != emissive:
 		_generator_ring_material.emission = emissive
 
-## The working console's screen: the standby glow carries no text; the
-## Activado label carries the Spanish state wording pinned by the tests
-## and the lane's machine checks.
+## The working console's screen points at the action while on standby;
+## the Activado label then confirms the state pinned by the tests and
+## the lane's machine checks.
 func _apply_console_state(state: int) -> void:
 	_console_state = state
 	if _screen_material == null or _label == null:

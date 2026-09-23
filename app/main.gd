@@ -15,8 +15,35 @@ var hallway: Hallway
 var power_room: PowerRoom
 var wake_pass: WakePass
 var wake_present: WakePresent
+var menu_layer: CanvasLayer
+var menu: MainMenu
 
 func _ready() -> void:
+	_show_menu()
+
+func _physics_process(_delta: float) -> void:
+	if game != null:
+		game.tick()
+
+func _show_menu() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	menu_layer = CanvasLayer.new()
+	menu_layer.layer = 64
+	menu = MainMenu.new()
+	menu.play_requested.connect(_start_game)
+	menu.quit_requested.connect(_quit_game)
+	menu_layer.add_child(menu)
+	add_child(menu_layer)
+
+func _start_game() -> void:
+	if game != null:
+		return
+	menu_layer.queue_free()
+	menu_layer = null
+	menu = null
+	# Let the menu's click or key release finish before gameplay starts,
+	# otherwise that same press can also trigger the wake interaction.
+	await get_tree().process_frame
 	game = Game.new()
 	add_child(RoomGeometry.build(true))
 	add_child(StasisPods.build(game.registry))
@@ -34,8 +61,8 @@ func _ready() -> void:
 	_add_player()
 	_add_wake_presentation()
 
-func _physics_process(_delta: float) -> void:
-	game.tick()
+func _quit_game() -> void:
+	get_tree().quit()
 
 ## The eyelid pass over the presented frame and its driver over the sim's
 ## wake timeline: the lids exist fully closed from the first frame, and

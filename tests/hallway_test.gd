@@ -155,35 +155,38 @@ func test_switch_plate_sits_beside_the_doorway() -> void:
 	var act := Vector2(Hallway.switch_act_center().x, Hallway.switch_act_center().z)
 	assert_float_in_range(hatch.distance_to(act), 0.0, PlayerMotion.HATCH_INTERACT_REACH,
 		"the beside-door plate sits inside the doorway's press overlap")
-	var pane: MeshInstance3D = switch_group.get_node("GlassPane")
-	var shards: Node3D = switch_group.get_node("GlassShards")
-	assert_true(pane != null and shards != null, "the switch carries a glass cover and its shards")
-	assert_float_in_range(pane.position.x,
+	var cover: Node3D = switch_group.get_node("GlassCover")
+	var pane: MeshInstance3D = cover.get_node("GlassPane")
+	assert_true(pane != null, "the switch carries a pane on a hinge")
+	assert_float_in_range(cover.position.x,
 		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_GLASS_STANDOFF - 1e-4,
 		Hallway.SWITCH_PLATE_SIZE.x / 2.0 + Hallway.SWITCH_GLASS_STANDOFF + 1e-4,
-		"the pane stands proud of the dome's apex")
-	assert_true(pane.visible, "the glass cover starts intact")
-	assert_false(shards.visible, "the shards hide until the smash")
-	assert_true(hallway.switch_glass_intact(), "the cover reads intact before the flip")
+		"the pane's hinge stands proud of the dome's apex")
+	assert_float_equal(cover.rotation.y, 0.0, "the glass cover starts closed")
+	assert_float_equal(hallway.switch_glass_open_amount(), 0.0, "the hinge clock starts closed")
 
-## The break-glass cover: the flip's press smashes the pane the frame
-## the hallway lights — pane hidden, shards hanging — and a hallway
-## built from an already-lit game starts with the cover broken, so no
-## resumed scene shows glass over a lit switch.
-func test_the_flip_smashes_the_glass_cover() -> void:
+## A successful flip opens the pane around its side hinge over a short,
+## deterministic tick budget. A resumed lit scene starts fully open.
+func test_the_flip_opens_the_glass_cover() -> void:
 	var game := _awake_game()
 	var hallway := Hallway.build(game)
-	assert_true(hallway.switch_glass_intact(), "the cover reads intact before the flip")
+	assert_float_equal(hallway.switch_glass_open_amount(), 0.0, "the cover starts closed")
 	game.light_hallway()
 	hallway.process_frame(Sim.LOGICAL_TICK_SECS)
-	assert_false(hallway.switch_glass_intact(), "the flip smashed the cover")
-	assert_false(hallway.get_node("HallSwitch").get_node("GlassPane").visible, "the pane hides after the smash")
-	assert_true(hallway.get_node("HallSwitch").get_node("GlassShards").visible, "the shards hang after the smash")
+	assert_float_in_range(hallway.switch_glass_open_amount(), 0.001, 0.999, "the flip starts the cover swing")
+	for _tick: int in range(Hallway.SWITCH_GLASS_OPEN_TICKS - 1):
+		hallway.process_frame(Sim.LOGICAL_TICK_SECS)
+	assert_float_equal(hallway.switch_glass_open_amount(), 1.0, "the hinge lands fully open")
+	var cover: Node3D = hallway.get_node("HallSwitch").get_node("GlassCover")
+	assert_float_in_range(cover.rotation.y,
+		Hallway.SWITCH_GLASS_OPEN_ANGLE - 1e-5,
+		Hallway.SWITCH_GLASS_OPEN_ANGLE + 1e-5,
+		"the pane swings clear of the button")
+	assert_true(cover.get_node("GlassPane").visible, "opening keeps the glass whole")
 	var lit_game := _awake_game()
 	lit_game.light_hallway()
 	var lit_hallway := Hallway.build(lit_game)
-	assert_false(lit_hallway.switch_glass_intact(), "a hallway built from an already-lit game starts broken")
-	assert_false(lit_hallway.get_node("HallSwitch").get_node("GlassPane").visible, "the resumed pane starts hidden")
+	assert_float_equal(lit_hallway.switch_glass_open_amount(), 1.0, "a resumed lit hallway starts open")
 
 func test_hallway_holds_no_smoke() -> void:
 	var game := _awake_game()
